@@ -89,12 +89,68 @@ spec:
 2. **Создать Service типа ClusterIP**, который:
    - Открывает `nginx` на порту `9001`.
    - Открывает `multitool` на порту `9002`.
+  
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-mt-svc
+spec:
+  ports:
+  - name: nginx-svc
+    protocol: TCP
+    port: 9001
+    targetPort: 80
+  - name: mt-svc
+    protocol: TCP
+    port: 9002
+    targetPort: 8080
+  selector:
+    app: main 
+  type: ClusterIP # Можно не писать, по умолчанию
+```
+
 3. **Проверить доступность** изнутри кластера:
 ```bash
  kubectl run test-pod --image=wbitt/network-multitool --rm -it -- sh
  curl <service-name>:9001 # Проверить nginx
  curl <service-name>:9002 # Проверить multitool
 ```
+
+```
+ubuntu@ubuntu:~/src/kuber/1.4/kuber-homeworks_1.4$ kubectl run test-pod --image=wbitt/network-multitool --rm -it -- sh
+If you don't see a command prompt, try pressing enter.
+/ #  curl nginx-mt-svc:9001
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+/ #  curl nginx-mt-svc:9002
+WBITT Network MultiTool (with NGINX) - netology-deployment-7ccf96f75-2g846 - 10.1.243.244 - HTTP: 8080 , HTTPS: 443 . (Formerly praqma/network-multitool)
+/ # 
+```
+
+
+
 4. **Создать Service типа NodePort** для доступа к `nginx` снаружи.
 5. **Проверить доступ** с локального компьютера:
 ```bash
