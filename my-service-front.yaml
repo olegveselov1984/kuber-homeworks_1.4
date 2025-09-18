@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-mt-svc-front
+spec:
+  ports:
+  - name: nginx-svc
+    protocol: TCP
+    port: 9001
+    targetPort: 80
+    nodePort: 30080
+  selector:
+    app: main-front 
+  type: NodePort 

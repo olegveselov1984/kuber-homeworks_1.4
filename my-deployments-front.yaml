@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netology-deployment-front
+  labels:
+    app: main-front
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: main-front
+  template:
+    metadata:
+      labels:
+        app: main-front
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        env:
+          - name: HTTP_PORT
+            value: "80"        
+        # ports:
+        # - containerPort: 8080

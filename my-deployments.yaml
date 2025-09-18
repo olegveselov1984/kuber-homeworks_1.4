@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netology-deployment
+  labels:
+    app: main
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: main
+  template:
+    metadata:
+      labels:
+        app: main
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        env:
+          - name: HTTP_PORT
+            value: "80"        
+        # ports:
+        # - containerPort: 8080
+      - name: network-multitool
+        image: wbitt/network-multitool
+        # ports:
+        # - containerPort: 8085
+        env:
+          - name: HTTP_PORT
+            value: "8080"
