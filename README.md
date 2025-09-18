@@ -71,9 +71,9 @@ spec:
       containers:
       - name: nginx
         image: nginx:latest
-        # env:
-        #   - name: HTTP_PORT
-        #     value: "80"        
+        env:
+          - name: HTTP_PORT
+            value: "80"        
         # ports:
         # - containerPort: 8080
       - name: network-multitool
