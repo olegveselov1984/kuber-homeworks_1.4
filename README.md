@@ -52,7 +52,6 @@
    - Количество реплик: `3`.
 
 ```
-```bash
 apiVersion: apps/v1
 kind: Deployment
 metadata:
