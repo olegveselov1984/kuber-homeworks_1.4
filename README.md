@@ -148,6 +148,7 @@ Commercial support is available at
 WBITT Network MultiTool (with NGINX) - netology-deployment-7ccf96f75-2g846 - 10.1.243.244 - HTTP: 8080 , HTTPS: 443 . (Formerly praqma/network-multitool)
 / # 
 ```
+<img width="1044" height="509" alt="image" src="https://github.com/user-attachments/assets/fc798756-d4a8-4c68-a3e2-75f3ea7dda32" />
 
 
 
@@ -206,7 +207,8 @@ Commercial support is available at
 </body>
 </html>
 ```
- 
+ <img width="711" height="429" alt="image" src="https://github.com/user-attachments/assets/6ab43e89-4a7a-4399-bed3-454bc2e0e24c" />
+
 
 ### **Что сдать на проверку**
 - Манифесты:
