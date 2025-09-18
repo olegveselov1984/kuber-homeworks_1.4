@@ -225,8 +225,97 @@ Commercial support is available at
 ### **Шаги выполнения**
 1. **Развернуть два Deployment**:
    - `frontend` (образ `nginx`).
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netology-deployment-front
+  labels:
+    app: main-front
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: main-front
+  template:
+    metadata:
+      labels:
+        app: main-front
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        env:
+          - name: HTTP_PORT
+            value: "80"        
+        # ports:
+        # - containerPort: 8080
+```
+
    - `backend` (образ `wbitt/network-multitool`).
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netology-deployment-back
+  labels:
+    app: main-back
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: main-back
+  template:
+    metadata:
+      labels:
+        app: main-back
+    spec:
+      containers:
+      - name: network-multitool
+        image: wbitt/network-multitool
+        # ports:
+        # - containerPort: 8085
+        env:
+          - name: HTTP_PORT
+            value: "8080"
+```
+
+
 2. **Создать Service** для каждого приложения.
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-mt-svc-front
+spec:
+  ports:
+  - name: nginx-svc
+    protocol: TCP
+    port: 9001
+    targetPort: 80
+    nodePort: 30080
+  selector:
+    app: main-front 
+  type: NodePort 
+```
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-mt-svc-back
+spec:
+  ports:
+  - name: mt-svc
+    protocol: TCP
+    port: 9002
+    targetPort: 8080
+  selector:
+    app: main-back 
+  type: NodePort 
+```
+
+
 3. **Включить Ingress-контроллер**:
 ```bash
  microk8s enable ingress
@@ -234,12 +323,71 @@ Commercial support is available at
 4. **Создать Ingress**, который:
    - Открывает `frontend` по пути `/`.
    - Открывает `backend` по пути `/api`.
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-front-back
+  annotations:  # ВАЖНО: Эта аннотация нужна для rewrite правил
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+#  - host: 127.0.0.1
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-mt-svc-front # УКАЖИТЕ: Имя frontend Service
+            port:
+              number: 9001
+      - path: /api # КЛЮЧЕВОЙ ПУТЬ: API endpoint
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-mt-svc-back # УКАЖИТЕ: Имя backend Service
+            port:
+              number: 9002
+```
+
 5. **Проверить доступность**:
 ```bash
  curl <host>/
  curl <host>/api
    ```
  или через браузер.
+
+```
+ubuntu@ubuntu:~/src/kuber/1.4/kuber-homeworks_1.4$ curl 127.0.0.1/
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+ubuntu@ubuntu:~/src/kuber/1.4/kuber-homeworks_1.4$ curl 127.0.0.1/api
+WBITT Network MultiTool (with NGINX) - netology-deployment-back-c476f9bf5-4h6xg - 10.1.243.252 - HTTP: 8080 , HTTPS: 443 . (Formerly praqma/network-multitool)
+```
+ <img width="1050" height="478" alt="image" src="https://github.com/user-attachments/assets/554238d5-cfa7-4fe1-a999-1b191dd94a73" />
+
 
 ### **Что сдать на проверку**
 - Манифесты:
